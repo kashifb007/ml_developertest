@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="countryadmin" translate="label" sortOrder="401" class="ml-extensions">
+            <label>ML Extensions</label>
+        </tab>
+        <section id="countryadmin" translate="label" type="text" sortOrder="2000" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>ML Country Configuration</label>
+            <tab>countryadmin</tab>
+            <resource>ML_DeveloperTest::configuration</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>ML Country Configuration</label>
+                <field id="country_enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable ML Country</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="warning_message" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Warning Message</label>
+                    <validate>required-entry</validate>
+                    <comment>Enter Warning message to be displayed</comment>
+                    <depends>
+                        <field id="country_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="api_url" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>API URL</label>
+                    <validate>required-entry</validate>
+                    <comment>Please enter IP 2 Country API URL</comment>
+                    <depends>
+                        <field id="country_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="disabled_countries" translate="label comment" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Disabled Countries</label>
+                    <comment>Comma separated ISO3 Country Codes</comment>
+                    <depends>
+                        <field id="country_enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

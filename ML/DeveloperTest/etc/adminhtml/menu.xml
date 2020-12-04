@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="ML_DeveloperTest::country" title="Country" module="ML_DeveloperTest" sortOrder="5" resource="ML_DeveloperTest::countrylistmenu" parent="Magento_Backend::stores"/>
+        <add id="ML_DeveloperTest::countrylist" title="Countries" module="ML_DeveloperTest" sortOrder="10" parent="ML_DeveloperTest::country" action="developertest/countrylist" resource="ML_DeveloperTest::countrylist"/>
+        <add id="ML_DeveloperTest::configuration" title="ML Config" module="ML_DeveloperTest" sortOrder="20" action="adminhtml/system_config/edit/section/countryadmin" resource="ML_DeveloperTest::configuration" parent="ML_DeveloperTest::country"/>
+    </menu>
+</config>

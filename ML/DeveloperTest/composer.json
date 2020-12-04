@@ -1,0 +1,23 @@
+{
+    "name": "ml/developertest",
+    "description": "ML Magento2 Countries extension",
+    "keywords": [
+        "magento2",
+        "ml",
+        "developertest"
+    ],
+    "type": "magento2-module",
+    "license": "OSL-3.0",
+    "require": {
+        "php": "~5.5.0|~5.6.0|~7.0.0",
+        "guzzlehttp/guzzle": "^6.3.3"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "ML\\DeveloperTest\\": "app/code/ML/DeveloperTest"
+        }
+    }
+}

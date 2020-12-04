@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="ML\DeveloperTest\Model\CountryInterface" type="ML\DeveloperTest\Model\Country" />
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="developertest_countrylist_listing_data_source" xsi:type="string">ML\DeveloperTest\Model\ResourceModel\Country\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="ML\DeveloperTest\Model\ResourceModel\Country\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">developertest_countries</argument>
+            <argument name="eventPrefix" xsi:type="string">developertest_countrylist_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">developertest_countrylist_collection</argument>
+            <argument name="resourceModel" xsi:type="string">ML\DeveloperTest\Model\ResourceModel\Country</argument>
+        </arguments>
+    </type>
+    <virtualType name="CountryGridFilterPool" type="Magento\Framework\View\Element\UiComponent\DataProvider\FilterPool">
+        <arguments>
+            <argument name="appliers" xsi:type="array">
+                <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
+                <item name="fulltext" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\FulltextFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="CountryGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
+        <arguments>
+            <argument name="collection" xsi:type="object" shared="false">ML\DeveloperTest\Model\ResourceModel\Country\Collection</argument>
+            <argument name="filterPool" xsi:type="object" shared="false">CountryGridFilterPool</argument>
+        </arguments>
+    </virtualType>
+</config>
