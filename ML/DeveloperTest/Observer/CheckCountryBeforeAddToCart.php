@@ -74,7 +74,9 @@ class CheckCountryBeforeAddToCart implements ObserverInterface
 
         $this->client = new Client([
             'base_uri' => $this->_baseUri,
-            'verify' => false
+            'verify' => false,
+            'timeout' => 3,
+            'connect_timeout' => 3,
         ]);
 
         return $this->client;
@@ -86,6 +88,23 @@ class CheckCountryBeforeAddToCart implements ObserverInterface
     private function getCustomerSession()
     {
         return $this->_customerSession;
+    }
+
+    /**
+     * @return mixed|string
+     */
+    public function getUserIP()
+    {
+        if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            if (strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',') > 0) {
+                $addr = explode(",", $_SERVER['HTTP_X_FORWARDED_FOR']);
+                return trim($addr[0]);
+            } else {
+                return $_SERVER['HTTP_X_FORWARDED_FOR'];
+            }
+        } else {
+            return $_SERVER['REMOTE_ADDR'];
+        }
     }
 
     /**
@@ -103,7 +122,7 @@ class CheckCountryBeforeAddToCart implements ObserverInterface
             $warningMessage = $this->_scopeConfig->getValue('countryadmin/general/warning_message', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
             //if session shows cust can't order, just display message and abort
-            if (null !== $this->getCustomerSession()->getCantOrder()) {
+            if (null !== $this->getCustomerSession()->getCountry()) {
                 $this->_messageManager->addWarning($warningMessage . $this->getCustomerSession()->getCountry());
                 throw new \Exception($warningMessage);
             }
@@ -115,7 +134,7 @@ class CheckCountryBeforeAddToCart implements ObserverInterface
             $http = $this->newClient();
 
             //get your ip
-            $myIp = $_SERVER['REMOTE_ADDR'];
+            $myIp = $this->getUserIP();
             $isValid = true;
 
             try {
@@ -125,8 +144,8 @@ class CheckCountryBeforeAddToCart implements ObserverInterface
                 if ($res->getStatusCode() === 200) {
                     $arrayContent = json_decode($res->getBody()->getContents(), true);
                     if (isset($arrayContent)) {
-                        $country = $arrayContent['countryCode3'];
-                        if (!empty($excludedCountries)) {
+                        $country = $arrayContent['countryCode3'] ?? null;
+                        if (!empty($excludedCountries) && (!empty($country))) {
                             $exluded = explode(",", $excludedCountries);
                             if (in_array($country, $exluded)) {
                                 $isValid = false;
@@ -147,22 +166,25 @@ class CheckCountryBeforeAddToCart implements ObserverInterface
                     $items = [];
 
                     foreach ($collection as $item) {
-                        $items[$item->getIso3Code()] = $item->isAllowed();
-                        if ($items[$country] == 0) {
-                            $isValid = false;
-                            $this->getCustomerSession()->setCountry($items[$country]);
-                            break;
+                        $items[$item->getIso3Code()] = $item->getIsAllowed();
+                        if (isset($items[$country])) {
+                            if ($items[$country] == 0) {
+                                $isValid = false;
+                                $this->getCustomerSession()->setCountry($country);
+                                break;
+                            }
                         }
                     }
                 }
 
                 if (!$isValid) {
-                    $this->getCustomerSession()->setCountry(true);
+                    $this->getCustomerSession()->setCountry($country);
                     $this->_messageManager->addWarning($warningMessage . $this->getCustomerSession()->getCountry());
                     throw new \Exception($warningMessage);
                 } else {
                     $this->getCustomerSession()->unsetCantOrder();
                     $this->getCustomerSession()->unsetCountry();
+                    return;
                 }
             } catch (GuzzleException $e) {
                 $this->_messageManager->addErrorMessage($e);
